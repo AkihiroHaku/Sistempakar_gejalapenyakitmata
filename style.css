@@ -1,0 +1,124 @@
+/* --- Reset & Pengaturan Dasar --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7f9; /* Latar belakang abu-abu lembut */
+    color: #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* --- Container Utama --- */
+.container {
+    width: 100%;
+    max-width: 700px;
+}
+
+/* --- Header --- */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* --- Konten Utama (Card) --- */
+main#app {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+main h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* --- Tabel Gejala --- */
+.symptom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.symptom-table th, 
+.symptom-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f5;
+}
+
+.symptom-table th {
+    font-weight: 600;
+    color: #555;
+}
+
+.symptom-table tbody tr:hover {
+    background-color: #f9fafb; /* Efek hover pada baris tabel */
+}
+
+.symptom-table td:last-child {
+    text-align: center;
+}
+
+/* --- Tombol Analisis --- */
+#analyzeBtn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#analyzeBtn:hover {
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* --- Desain Responsif untuk Mobile --- */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+
+    main#app {
+        padding: 20px;
+    }
+}
