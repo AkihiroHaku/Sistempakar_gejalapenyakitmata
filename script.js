@@ -126,7 +126,7 @@ function analyze() {
       ${diagnosisHtml}
       <small><b>Disclaimer:</b> Hasil ini adalah prediksi berdasarkan probabilitas, bukan diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.</small>
       <br><br>
-      <button id="restartBtn">Analisis Ulang</button>
+      <button id="restartBtn" class="analyze-btn">Analisis Ulang</button>
     </div>
   `;
 
