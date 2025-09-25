@@ -62,75 +62,98 @@ const diagnosisDetails = {
 };
 
 
-// ====== RENDER TABEL GEJALA (Tidak diubah) ======
+// ====== RENDER TABEL GEJALA AWAL ======
 const tableBody = document.getElementById("symptomTableBody");
-questions.forEach(q => {
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td>${q.text}</td>
-    <td><input type="checkbox" value="${q.key}"></td>
-  `;
-  tableBody.appendChild(row);
-});
-
-// ====== ANALISIS DENGAN LOGIKA SKORING (BARU) ======
-function analyze() {
-  const checkedSymptoms = [...document.querySelectorAll('input[type="checkbox"]:checked')]
-    .map(cb => cb.value);
-
-  // Anda bisa mengubah nilai ini. 50 berarti minimal 50% gejala harus cocok.
-  const MINIMUM_MATCH_THRESHOLD = 50; 
-  let possibleDiagnoses = [];
-
-  // Langkah 1: Hitung skor kecocokan untuk setiap penyakit
-  for (const rule of rules) {
-    const matchCount = rule.conditions.filter(cond => checkedSymptoms.includes(cond)).length;
-    const totalConditions = rule.conditions.length;
-    
-    if (matchCount > 0) {
-      const matchPercentage = (matchCount / totalConditions) * 100;
-      
-      if (matchPercentage >= MINIMUM_MATCH_THRESHOLD) {
-        possibleDiagnoses.push({
-          conclusion: rule.conclusion,
-          percentage: Math.round(matchPercentage)
-        });
-      }
-    }
-  }
-
-  // Langkah 2: Urutkan hasil dari persentase tertinggi ke terendah
-  possibleDiagnoses.sort((a, b) => b.percentage - a.percentage);
-
-  // Langkah 3: Siapkan dan tampilkan hasil
-  let diagnosisHtml = "";
-  if (possibleDiagnoses.length === 0) {
-    diagnosisHtml = "<p>Tidak ada diagnosis yang cocok dengan kombinasi gejala yang Anda pilih. Coba pilih lebih banyak gejala.</p>";
-  } else {
-    diagnosisHtml = "<h3>Kemungkinan Diagnosis:</h3>";
-    possibleDiagnoses.forEach(diag => {
-      const details = diagnosisDetails[diag.conclusion];
-      diagnosisHtml += `
-        <div class="diagnosis-item" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
-          <h4>${details.name} (Tingkat kecocokan: ${diag.percentage}%)</h4>
-          <p>${details.advice}</p>
-        </div>
-      `;
+// Pengecekan untuk memastikan elemen ada sebelum dimanipulasi
+if (tableBody) {
+    questions.forEach(q => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${q.text}</td>
+            <td><input type="checkbox" value="${q.key}"></td>
+        `;
+        tableBody.appendChild(row);
     });
-  }
-  
-  const appContainer = document.getElementById("app");
-  appContainer.innerHTML = `
-    <div class="result-box">
-      <h2>Hasil Analisis</h2>
-      ${diagnosisHtml}
-      <small><b>Disclaimer:</b> Hasil ini adalah prediksi berdasarkan probabilitas, bukan diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.</small>
-      <br><br>
-      <button id="restartBtn" class="analyze-btn">Analisis Ulang</button>
-    </div>
-  `;
-
-  document.getElementById("restartBtn").addEventListener("click", () => location.reload());
 }
 
+// ====== ELEMEN DOM & KONTEN AWAL ======
+const appContainer = document.getElementById("app");
+const initialAppContent = appContainer.innerHTML; // Simpan konten awal aplikasi
+
+// ====== FUNGSI ANALISIS UTAMA ======
+function analyze() {
+    const checkedSymptoms = [...document.querySelectorAll('input[type="checkbox"]:checked')]
+        .map(cb => cb.value);
+
+    const MINIMUM_MATCH_THRESHOLD = 50;
+    let possibleDiagnoses = [];
+
+    for (const rule of rules) {
+        const matchCount = rule.conditions.filter(cond => checkedSymptoms.includes(cond)).length;
+        const totalConditions = rule.conditions.length;
+
+        if (matchCount > 0) {
+            const matchPercentage = (matchCount / totalConditions) * 100;
+            if (matchPercentage >= MINIMUM_MATCH_THRESHOLD) {
+                possibleDiagnoses.push({
+                    conclusion: rule.conclusion,
+                    percentage: Math.round(matchPercentage)
+                });
+            }
+        }
+    }
+
+    possibleDiagnoses.sort((a, b) => b.percentage - a.percentage);
+    renderResults(possibleDiagnoses); // Panggil fungsi render yang baru
+}
+
+// ====== FUNGSI BARU UNTUK MENAMPILKAN HASIL ======
+function renderResults(diagnoses) {
+    let diagnosisHtml = "";
+    let resultBoxClass = "result-box"; // Kelas default
+
+    if (diagnoses.length === 0) {
+        resultBoxClass += " no-results"; // Tambahkan kelas khusus jika hasil kosong
+        diagnosisHtml = `
+            <svg class="no-results-illustration" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+            </svg>
+            <h3>Diagnosis Tidak Ditemukan</h3>
+            <p>Kami tidak dapat menemukan kecocokan dari gejala yang Anda pilih. Coba pilih lebih banyak atau kombinasi gejala yang berbeda.</p>
+        `;
+    } else {
+        diagnosisHtml = "<h3>Kemungkinan Diagnosis:</h3>";
+        diagnoses.forEach(diag => {
+            const details = diagnosisDetails[diag.conclusion];
+            // Menghapus inline style, karena sudah diatur di CSS
+            diagnosisHtml += `
+                <div class="diagnosis-item">
+                    <h4>${details.name} <span>(Tingkat kecocokan: ${diag.percentage}%)</span></h4>
+                    <p>${details.advice}</p>
+                </div>
+            `;
+        });
+    }
+
+    appContainer.innerHTML = `
+        <div class="${resultBoxClass}">
+            ${diagnosisHtml}
+            <p class="disclaimer"><b>Disclaimer:</b> Hasil ini adalah prediksi, bukan diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.</p>
+            <button id="restartBtn" class="analyze-btn">Analisis Ulang</button>
+        </div>
+    `;
+
+    // Pasang event listener ke tombol reset yang baru dibuat
+    document.getElementById("restartBtn").addEventListener("click", resetApp);
+}
+
+// ====== FUNGSI BARU UNTUK RESET APLIKASI ======
+function resetApp() {
+    appContainer.innerHTML = initialAppContent;
+    // Pasang kembali event listener ke tombol analisis yang asli setelah konten di-reset
+    document.getElementById("analyzeBtn").addEventListener("click", analyze);
+}
+
+// ====== EVENT LISTENER AWAL ======
+// Pastikan tombol analisis awal memiliki id="analyzeBtn" dan class="analyze-btn" di HTML
 document.getElementById("analyzeBtn").addEventListener("click", analyze);
