@@ -138,7 +138,9 @@ function renderResults(diagnoses) {
     appContainer.innerHTML = `
         <div class="${resultBoxClass}">
             ${diagnosisHtml}
-            <p class="disclaimer"><b>Disclaimer:</b> Hasil ini adalah prediksi, bukan diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.</p>
+            <p class="disclaimer"><b>Disclaimer:</b> Hasil ini adalah prediksi, bukan diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.
+            <a href="https://www.halodoc.com/">Klik Disini</a>
+            </p>
             <button id="restartBtn" class="analyze-btn">Analisis Ulang</button>
         </div>
     `;
